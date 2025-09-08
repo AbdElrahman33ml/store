@@ -22,13 +22,12 @@ pipeline {
                       -Dsonar.token=${SONAR_TOKEN} \
                       -Dsonar.projectKey=js-ci-project_js-ct \
                       -Dsonar.organization=js-ci-project \
-                  -Dsonar.sources=. \
-                  -Dsonar.host.url=https://sonarcloud.io
-                '''
+                      -Dsonar.sources=. \
+                      -Dsonar.host.url=https://sonarcloud.io
+                    '''
+                }
             }
         }
-
-        
 
         stage('Docker Build And Push') {
             steps {
