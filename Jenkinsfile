@@ -33,7 +33,7 @@ pipeline {
         stage('Docker Build And Push') {
             steps {
                 script {
-                    def imageName = "pekker123/crud-123"
+                    def imageName = "abdelrahman780/crud-123"
                     def imageTag = "latest"
 
                     docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
@@ -49,7 +49,7 @@ pipeline {
                 script {
                     // Clean up old containers and run the new one
                     sh 'docker rm -f $(docker ps -q) || true'
-                    sh 'docker run -d -p 3000:3000 pekker123/crud-123:latest'
+                    sh 'docker run -d -p 3000:3000 abdelrahman780/crud-123:latest'
                 }
             }
         }
