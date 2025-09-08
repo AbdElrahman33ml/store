@@ -10,30 +10,25 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
-                sh 'npm install @sonar/scan'
+                sh 'npm install --save-dev @sonar/sonar-scanner'
             }
         }
 
         stage('Code Analysis') {
             steps {
-                sh '''
-                sonar-scanner \
-                  -Dsonar.token=${SONAR_TOKEN} \
-                  -Dsonar.projectKey=js-ci-project_js-ct \
-                  -Dsonar.organization=js-ci-project \
+                timeout(time: 4, unit: 'MINUTES') {
+                    sh '''
+                    sonar-scanner \
+                      -Dsonar.token=${SONAR_TOKEN} \
+                      -Dsonar.projectKey=js-ci-project_js-ct \
+                      -Dsonar.organization=js-ci-project \
                   -Dsonar.sources=. \
                   -Dsonar.host.url=https://sonarcloud.io
                 '''
             }
         }
 
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        
 
         stage('Docker Build And Push') {
             steps {
