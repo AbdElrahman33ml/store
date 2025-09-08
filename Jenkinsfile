@@ -2,33 +2,33 @@ pipeline {
     agent any
 
     environment {
-        PATH = "./node_modules/.bin:$PATH" // علشان نقدر نشغل sonar-scanner مباشرة
-        SONAR_TOKEN = credentials('sonar-token') // التوكن الخاص بـ SonarCloud
+        PATH = "./node_modules/.bin:$PATH" // This allows us to run sonar-scanner directly
+        SONAR_TOKEN = credentials('sonar-token') // The token for SonarCloud
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
-                sh 'npm install --save-dev @sonar/sonar-scanner'
+                // Corrected the package name to 'sonar-scanner'
+                sh 'npm install --save-dev sonar-scanner'
             }
         }
 
         stage('Code Analysis') {
-    steps {
-        timeout(time: 4, unit: 'MINUTES') {
-            sh '''
-            npx sonarqube-scanner \
-              -Dsonar.token=${SONAR_TOKEN} \
-              -Dsonar.projectKey=js-ci-project_js-ct \
-              -Dsonar.organization=js-ci-project \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=https://sonarcloud.io
-            '''
+            steps {
+                timeout(time: 4, unit: 'MINUTES') {
+                    sh '''
+                    npx sonarqube-scanner \\
+                      -Dsonar.token=${SONAR_TOKEN} \\
+                      -Dsonar.projectKey=js-ci-project_js-ct \\
+                      -Dsonar.organization=js-ci-project \\
+                      -Dsonar.sources=. \\
+                      -Dsonar.host.url=https://sonarcloud.io
+                    '''
+                }
+            }
         }
-    }
-}
-
 
         stage('Docker Build And Push') {
             steps {
@@ -47,7 +47,7 @@ pipeline {
         stage('Deploy To EC2') {
             steps {
                 script {
-                    // تنظيف الحاويات القديمة وتشغيل الجديدة
+                    // Clean up old containers and run the new one
                     sh 'docker rm -f $(docker ps -q) || true'
                     sh 'docker run -d -p 3000:3000 pekker123/crud-123:latest'
                 }
