@@ -15,19 +15,20 @@ pipeline {
         }
 
         stage('Code Analysis') {
-            steps {
-                timeout(time: 4, unit: 'MINUTES') {
-                    sh '''
-                    sonar-scanner \
-                      -Dsonar.token=${SONAR_TOKEN} \
-                      -Dsonar.projectKey=js-ci-project_js-ct \
-                      -Dsonar.organization=js-ci-project \
-                      -Dsonar.sources=. \
-                      -Dsonar.host.url=https://sonarcloud.io
-                    '''
-                }
-            }
+    steps {
+        timeout(time: 4, unit: 'MINUTES') {
+            sh '''
+            npx sonarqube-scanner \
+              -Dsonar.token=${SONAR_TOKEN} \
+              -Dsonar.projectKey=js-ci-project_js-ct \
+              -Dsonar.organization=js-ci-project \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=https://sonarcloud.io
+            '''
         }
+    }
+}
+
 
         stage('Docker Build And Push') {
             steps {
